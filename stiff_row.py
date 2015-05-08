@@ -133,7 +133,7 @@ def aufgabe_b():
     print(" Aufgabe b)")
     # Logistic ODE
     c = 0.01
-    l = 25.0
+    l = 60
     f = lambda y: l*y*(1 - y)
     Jf = lambda y: l - 2*l*y
 
@@ -152,34 +152,48 @@ def aufgabe_b():
     #       Loesung und den Fehler.                  #
     #                                                #
     ##################################################
-    figure() 
+    ax1 = figure().add_subplot(111)
+
+    #t_sol = linspace(0,T+0.5,100)
+    #y_sol = sol(t_sol)
+    #ax1.plot(t_sol, y_sol, label=r"$y_{sol}(t)$")
     
-    subplot(311)
-    t = linspace(0,T+0.5,100)
-    y = sol(t)
-    plot(t, y, label=r"$y_{sol}(t)$")
-    grid(True)
+    def find_lambda(l0=55, le=60, dl=0.1, max_err=0.05):
+        for l in arange(l0,le,dl):
+            f = lambda y: l*y*(1 - y)
+            Jf = lambda y: l - 2*l*y
+            sol = lambda t: (c*exp(l*t)) / (1 - c + c*exp(l*t))
+            t, y = constructor(row_2_step)(f, Jf, t0, y0, h, N)
+            err = max(abs(y[0] - sol(t)))
+            if err > max_err:
+                return True, l, err
+        return False, le, 0
+        
+    found_lambda, lf, err = find_lambda()
+    if found_lambda:
+        print("Error for row2 is becoming larger than 0.05 for lambda=%s: err=%s." % (lf, err))
+    
+    t_row2, y_row2 = constructor(row_2_step)(f, Jf, t0, y0, h, N)
+    y_sol = sol(t_row2)
+    ax1.plot(t_row2, y_row2[0], label=r"$y_{row2}(t)$")
+    ax1.plot(t_row2, y_sol, label=r"$y_{sol}(t)$")
     legend(loc="lower right")
-    xlabel(r"$t$")
-    ylabel(r"$y(t)$")
-    
-    subplot(312)
-    t, y = constructor(row_2_step)(f, Jf, t0, y0, h, N)
-    plot(t, y[0], label=r"$y_{row2}(t)$")
+
+    ax2 = ax1.twinx()
+    y_err = abs(y_row2[0] - y_sol)
+    ax2.plot(t_row2, y_err, label=r"$|y_{row2}(t)-y_{sol}(t)|$")
+    legend(loc="upper right")
+
     grid(True)
-    legend(loc="lower right")
+    title("row2")
     xlabel(r"$t$")
-    ylabel(r"$y(t)$")
     
-    subplot(313)    
-    t, y = constructor(row_3_step)(f, Jf, t0, y0, h, N)
-    plot(t, y[0], label=r"$y_{row3}(t)$")
-    grid(True)
-    legend(loc="lower right")
-    xlabel(r"$t$")
-    ylabel(r"$y(t)$")
+    savefig("plot_row2.png")
+
     
-    savefig("plot_row.png")
+#    t, y = constructor(row_3_step)(f, Jf, t0, y0, h, N)
+#    plot(t, y[0], label=r"$y_{row3}(t)$")
+
     
 ###################
 # Unteraufgabe c) #
