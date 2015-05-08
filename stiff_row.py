@@ -133,7 +133,7 @@ def aufgabe_b():
     print(" Aufgabe b)")
     # Logistic ODE
     c = 0.01
-    l = 60
+    l = 80
     f = lambda y: l*y*(1 - y)
     Jf = lambda y: l - 2*l*y
 
@@ -152,11 +152,7 @@ def aufgabe_b():
     #       Loesung und den Fehler.                  #
     #                                                #
     ##################################################
-    ax1 = figure().add_subplot(111)
 
-    #t_sol = linspace(0,T+0.5,100)
-    #y_sol = sol(t_sol)
-    #ax1.plot(t_sol, y_sol, label=r"$y_{sol}(t)$")
     
     def find_lambda(l0=55, le=60, dl=0.1, max_err=0.05):
         for l in arange(l0,le,dl):
@@ -175,22 +171,36 @@ def aufgabe_b():
     
     # TODO: row3 plot implement, plot row2 for multiple values of lambda, fix title
     
+    ax1 = figure().add_subplot(111)
     t_row2, y_row2 = constructor(row_2_step)(f, Jf, t0, y0, h, N)
     y_sol = sol(t_row2)
-    ax1.plot(t_row2, y_row2[0], label=r"$y_{row2}(t)$")
-    ax1.plot(t_row2, y_sol, label=r"$y_{sol}(t)$")
+    ax1.plot(t_row2, y_row2[0], alpha=0.7, color="blue", label=r"$y_{row2}(t)$")
+    ax1.plot(t_row2, y_sol, "--", linewidth=1.5, alpha=0.7, color="gray", label=r"$y_{sol}(t)$")
     legend(loc="lower right")
-
     ax2 = ax1.twinx()
     y_err = abs(y_row2[0] - y_sol)
-    ax2.plot(t_row2, y_err, label=r"$|y_{row2}(t)-y_{sol}(t)|$")
+    ax2.plot(t_row2, y_err, alpha=0.8, color="red", label=r"$err:=|y_{row2}(t)-y_{sol}(t)|$")
     legend(loc="upper right")
-
     grid(True)
-    title("row2")
+    title(r"Integrator ROW2 $\lambda:=%s$" % l)
     xlabel(r"$t$")
-    
-    savefig("plot_row2.png")
+    savefig("plot_row2_l%s.png" % l)
+
+
+    ax1 = figure().add_subplot(111)    
+    t_row3, y_row3 = constructor(row_3_step)(f, Jf, t0, y0, h, N)
+    y_sol = sol(t_row3)
+    ax1.plot(t_row3, y_row3[0], alpha=0.7, color="blue", label=r"$y_{row3}(t)$")
+    ax1.plot(t_row3, y_sol, "--", alpha=0.7, linewidth=1.5, color="gray", label=r"$y_{sol}(t)$")
+    legend(loc="lower right")
+    ax2 = ax1.twinx()
+    y_err = abs(y_row3[0] - y_sol)
+    ax2.plot(t_row3, y_err, alpha=0.8, color="red", label=r"$err:=|y_{row3}(t)-y_{sol}(t)|$")
+    legend(loc="upper right")
+    grid(True)
+    title(r"Integrator ROW2 $\lambda:=%s$" % l)
+    xlabel(r"$t$")
+    savefig("plot_row3_l%s.png" % l)
 
     
 #    t, y = constructor(row_3_step)(f, Jf, t0, y0, h, N)
