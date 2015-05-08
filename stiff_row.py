@@ -2,7 +2,6 @@ from numpy import *
 from numpy.linalg import solve, norm
 from matplotlib.pyplot import *
 
-
 ###################
 # Unteraufgabe a) #
 ###################
@@ -28,6 +27,14 @@ def row_2_step(f, Jf, yi, h):
     # TODO: Implementieren Sie die ROW-2 Methode hier. #
     #                                                  #
     ####################################################
+    
+    a = 1/(2+sqrt(2))
+    J = Jf(yi)
+    I = identity(n)
+    
+    k1 = solve((I - a*h*J), f(yi))
+    k2 = solve((I - a*h*J), f(yi+h*0.5*k1) - a*h*J.dot(k1))
+    yip1 = yi + h*k2
 
     return yip1
 
@@ -53,6 +60,17 @@ def row_3_step(f, Jf, yi, h):
     # TODO: Implementieren Sie die ROW-3 Methode hier. #
     #                                                  #
     ####################################################
+
+    a = 1/(2+sqrt(2))
+    d31 = -(4+sqrt(2))/(2+sqrt(2))
+    d32 = (6+sqrt(2))/(2+sqrt(2))
+    J = Jf(yi)
+    I = identity(n)
+    
+    k1 = solve((I - a*h*J), f(yi))
+    k2 = solve((I - a*h*J), f(yi+h*0.5*k1) - a*h*J.dot(k1))
+    k3 = solve((I - a*h*J), f(yi+h*k2) - d31*h*J.dot(k1) - d32*h*J.dot(k2))
+    yip1 = yi + h/6*(k1+4*k2+k3)
 
     return yip1
 
@@ -134,8 +152,35 @@ def aufgabe_b():
     #       Loesung und den Fehler.                  #
     #                                                #
     ##################################################
-
-
+    figure() 
+    
+    subplot(311)
+    t = linspace(0,T+0.5,100)
+    y = sol(t)
+    plot(t, y, label=r"$y_{sol}(t)$")
+    grid(True)
+    legend(loc="lower right")
+    xlabel(r"$t$")
+    ylabel(r"$y(t)$")
+    
+    subplot(312)
+    t, y = constructor(row_2_step)(f, Jf, t0, y0, h, N)
+    plot(t, y[0], label=r"$y_{row2}(t)$")
+    grid(True)
+    legend(loc="lower right")
+    xlabel(r"$t$")
+    ylabel(r"$y(t)$")
+    
+    subplot(313)    
+    t, y = constructor(row_3_step)(f, Jf, t0, y0, h, N)
+    plot(t, y[0], label=r"$y_{row3}(t)$")
+    grid(True)
+    legend(loc="lower right")
+    xlabel(r"$t$")
+    ylabel(r"$y(t)$")
+    
+    savefig("plot_row.png")
+    
 ###################
 # Unteraufgabe c) #
 ###################
