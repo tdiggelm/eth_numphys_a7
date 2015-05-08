@@ -173,6 +173,8 @@ def aufgabe_b():
     if found_lambda:
         print("Error for row2 is becoming larger than 0.05 for lambda=%s: err=%s." % (lf, err))
     
+    # TODO: row3 plot implement, plot row2 for multiple values of lambda, fix title
+    
     t_row2, y_row2 = constructor(row_2_step)(f, Jf, t0, y0, h, N)
     y_sol = sol(t_row2)
     ax1.plot(t_row2, y_row2[0], label=r"$y_{row2}(t)$")
