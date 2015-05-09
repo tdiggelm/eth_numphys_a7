@@ -165,39 +165,39 @@ def aufgabe_b():
     if found_lambda:
         print("Error for row2 is becoming larger than 0.05 for lambda=%s: err=%s." % (lf, err))
 
-    for l in [25,50,100]:
+    for l in [25,50,200]:
         f = lambda y: l*y*(1 - y)
         Jf = lambda y: l - 2*l*y
         sol = lambda t: (c*exp(l*t)) / (1 - c + c*exp(l*t))
         
         ax1 = figure().add_subplot(111)
-        t_row2, y_row2 = constructor(row_2_step)(f, Jf, t0, y0, h, N)
+        t_row2, y_row2 = row_2(f, Jf, t0, y0, h, N)
         y_sol = sol(t_row2)
         ax1.plot(t_row2, y_row2[0], alpha=0.7, color="blue", label=r"$y_{row2}(t)$")
         ax1.plot(t_row2, y_sol, "--", linewidth=1.5, alpha=0.7, color="gray", label=r"$y_{sol}(t)$")
         legend(loc="lower right")
         ax2 = ax1.twinx()
         y_err = abs(y_row2[0] - y_sol)
-        ax2.plot(t_row2, y_err, alpha=0.8, color="red", label=r"$err:=|y_{row2}(t)-y_{sol}(t)|$")
+        ax2.plot(t_row2, y_err, alpha=0.8, color="red", label=r"$\epsilon=|y_{row2}(t)-y_{sol}(t)|$")
         legend(loc="upper right")
         grid(True)
-        title(r"Integrator ROW2 $\lambda:=%s$" % l)
+        title(r"b) Integrator ROW2 $\lambda:=%s$" % l)
         xlabel(r"$t$")
         savefig("plot_row2_l%s.png" % l)
 
 
         ax1 = figure().add_subplot(111)    
-        t_row3, y_row3 = constructor(row_3_step)(f, Jf, t0, y0, h, N)
+        t_row3, y_row3 = row_3(f, Jf, t0, y0, h, N)
         y_sol = sol(t_row3)
         ax1.plot(t_row3, y_row3[0], alpha=0.7, color="blue", label=r"$y_{row3}(t)$")
         ax1.plot(t_row3, y_sol, "--", alpha=0.7, linewidth=1.5, color="gray", label=r"$y_{sol}(t)$")
         legend(loc="lower right")
         ax2 = ax1.twinx()
         y_err = abs(y_row3[0] - y_sol)
-        ax2.plot(t_row3, y_err, alpha=0.8, color="red", label=r"$err:=|y_{row3}(t)-y_{sol}(t)|$")
+        ax2.plot(t_row3, y_err, alpha=0.8, color="red", label=r"$\epsilon=|y_{row3}(t)-y_{sol}(t)|$")
         legend(loc="upper right")
         grid(True)
-        title(r"Integrator ROW2 $\lambda:=%s$" % l)
+        title(r"b) Integrator ROW2 $\lambda:=%s$" % l)
         xlabel(r"$t$")
         savefig("plot_row3_l%s.png" % l)
 
@@ -268,6 +268,7 @@ def aufgabe_c():
     legend(loc="lower left")
     xlabel(r"Number of steps $N$")
     ylabel(r"Absolute Error at $T = %.1f$" % T)
+    title("c) Convergence row2 vs. row3")
     savefig("convergence_row.png")
 
 
@@ -321,7 +322,19 @@ def odeintadapt(Psilow, Psihigh, T, y0, fy0=None, h0=None, hmin=None, reltol=1e-
         # TODO: Implementieren Sie hier die adaptive Strategie. #
         #                                                       #
         #########################################################
-        pass
+        yh=Psihigh(hi,yi)
+        yl=Psilow(hi,yi)
+        est=norm(yh-yl)
+        if est < max(reltol*norm(yi), abstol):
+            yi = yh
+            y.append(yi)
+            ti = ti+min(T-ti,hi)
+            t.append(ti)
+            hi = 1.1*hi
+            ee.append(est)
+        else:
+            rej.append(ti)
+            hi = hi/2.0
 
     return array(t).reshape(-1), array(y).T.reshape(n,-1), array(rej), array(ee)
 
@@ -335,11 +348,6 @@ def aufgabe_e():
     # Logistic ODE
     c = 0.01
     l = 50.0
-    f = lambda y: l*y*(1-y)
-    Jf = lambda y: l- 2*l*y
-
-    sol = lambda t: (c*exp(l*t)) / (1 - c + c*exp(l*t))
-    y0 = sol(0.0)
     T = 2.0
 
     nsteps = 0
@@ -351,8 +359,34 @@ def aufgabe_e():
     #       Loesung und den Fehler.                                        #
     #                                                                      #
     ########################################################################
+    
+    for l in [50,200]:
+        f = lambda y: l*y*(1-y)
+        Jf = lambda y: l- 2*l*y
+        sol = lambda t: (c*exp(l*t)) / (1 - c + c*exp(l*t))
+        y0 = sol(0.0)
+        
+        Psilow = lambda hi, yi: row_2_step(f, Jf, yi, hi)
+        Psihigh = lambda hi, yi: row_3_step(f, Jf, yi, hi)
+    
+        ax1 = figure().add_subplot(111)    
+        t, y_ada, rej, ee = odeintadapt(Psilow, Psihigh, T, y0, f(y0))
+        y_sol = sol(t)
+        ax1.plot(t, y_ada[0], alpha=0.7, color="blue", label=r"$y_{ada}(t)$")
+        ax1.plot(t, y_sol, "--", alpha=0.7, linewidth=1.5, color="gray", label=r"$y_{sol}(t)$")
+        legend(loc="lower right")
+        ax2 = ax1.twinx()
+        y_err = abs(y_ada[0] - y_sol)
+        ax2.plot(t, y_err, alpha=0.8, color="red", label=r"$\epsilon=||y_{ada}(t)-y_{sol}(t)||_2$")
+        legend(loc="upper right")
+        grid(True)
+        title(r"e) Adaptive Integrator with $\lambda:=%s$" % l)
+        xlabel(r"$t$")
+        savefig("plot_ada_l%s.png" % l)
+    
+        nsteps = len(t)
 
-    print("Es werden %d Zeitschritte benoetigt" % nsteps)
+        print("Fuer lambda=%s werden %d Zeitschritte benoetigt" % (l, nsteps))
 
 
 ###################
@@ -379,7 +413,18 @@ def aufgabe_f():
     #       und Plotten Sie die Loesung.                              #
     #                                                                 #
     ###################################################################
-
+    Psilow = lambda hi, yi: row_2_step(f, Jf, yi, hi)
+    Psihigh = lambda hi, yi: row_3_step(f, Jf, yi, hi)
+    
+    figure()    
+    t, y_ada, rej, ee = odeintadapt(Psilow, Psihigh, T, y0, f(y0))
+    plot(t, y_ada[0], label=r"$y_{0}(t)$")
+    plot(t, y_ada[1], label=r"$y_{1}(t)$")
+    legend(loc="lower right")
+    grid(True)
+    title(r"f) Adaptive integrator")
+    xlabel(r"$t$")
+    savefig("plot_ada_f.png")
 
 ###################
 # Unteraufgabe g) #
