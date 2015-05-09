@@ -134,10 +134,6 @@ def aufgabe_b():
     # Logistic ODE
     c = 0.01
     l = 80
-    f = lambda y: l*y*(1 - y)
-    Jf = lambda y: l - 2*l*y
-
-    sol = lambda t: (c*exp(l*t)) / (1 - c + c*exp(l*t))
     t0 = 0.0
     y0 = c
 
@@ -168,43 +164,42 @@ def aufgabe_b():
     found_lambda, lf, err = find_lambda()
     if found_lambda:
         print("Error for row2 is becoming larger than 0.05 for lambda=%s: err=%s." % (lf, err))
-    
-    # TODO: row3 plot implement, plot row2 for multiple values of lambda, fix title
-    
-    ax1 = figure().add_subplot(111)
-    t_row2, y_row2 = constructor(row_2_step)(f, Jf, t0, y0, h, N)
-    y_sol = sol(t_row2)
-    ax1.plot(t_row2, y_row2[0], alpha=0.7, color="blue", label=r"$y_{row2}(t)$")
-    ax1.plot(t_row2, y_sol, "--", linewidth=1.5, alpha=0.7, color="gray", label=r"$y_{sol}(t)$")
-    legend(loc="lower right")
-    ax2 = ax1.twinx()
-    y_err = abs(y_row2[0] - y_sol)
-    ax2.plot(t_row2, y_err, alpha=0.8, color="red", label=r"$err:=|y_{row2}(t)-y_{sol}(t)|$")
-    legend(loc="upper right")
-    grid(True)
-    title(r"Integrator ROW2 $\lambda:=%s$" % l)
-    xlabel(r"$t$")
-    savefig("plot_row2_l%s.png" % l)
+
+    for l in [25,50,100]:
+        f = lambda y: l*y*(1 - y)
+        Jf = lambda y: l - 2*l*y
+        sol = lambda t: (c*exp(l*t)) / (1 - c + c*exp(l*t))
+        
+        ax1 = figure().add_subplot(111)
+        t_row2, y_row2 = constructor(row_2_step)(f, Jf, t0, y0, h, N)
+        y_sol = sol(t_row2)
+        ax1.plot(t_row2, y_row2[0], alpha=0.7, color="blue", label=r"$y_{row2}(t)$")
+        ax1.plot(t_row2, y_sol, "--", linewidth=1.5, alpha=0.7, color="gray", label=r"$y_{sol}(t)$")
+        legend(loc="lower right")
+        ax2 = ax1.twinx()
+        y_err = abs(y_row2[0] - y_sol)
+        ax2.plot(t_row2, y_err, alpha=0.8, color="red", label=r"$err:=|y_{row2}(t)-y_{sol}(t)|$")
+        legend(loc="upper right")
+        grid(True)
+        title(r"Integrator ROW2 $\lambda:=%s$" % l)
+        xlabel(r"$t$")
+        savefig("plot_row2_l%s.png" % l)
 
 
-    ax1 = figure().add_subplot(111)    
-    t_row3, y_row3 = constructor(row_3_step)(f, Jf, t0, y0, h, N)
-    y_sol = sol(t_row3)
-    ax1.plot(t_row3, y_row3[0], alpha=0.7, color="blue", label=r"$y_{row3}(t)$")
-    ax1.plot(t_row3, y_sol, "--", alpha=0.7, linewidth=1.5, color="gray", label=r"$y_{sol}(t)$")
-    legend(loc="lower right")
-    ax2 = ax1.twinx()
-    y_err = abs(y_row3[0] - y_sol)
-    ax2.plot(t_row3, y_err, alpha=0.8, color="red", label=r"$err:=|y_{row3}(t)-y_{sol}(t)|$")
-    legend(loc="upper right")
-    grid(True)
-    title(r"Integrator ROW2 $\lambda:=%s$" % l)
-    xlabel(r"$t$")
-    savefig("plot_row3_l%s.png" % l)
-
-    
-#    t, y = constructor(row_3_step)(f, Jf, t0, y0, h, N)
-#    plot(t, y[0], label=r"$y_{row3}(t)$")
+        ax1 = figure().add_subplot(111)    
+        t_row3, y_row3 = constructor(row_3_step)(f, Jf, t0, y0, h, N)
+        y_sol = sol(t_row3)
+        ax1.plot(t_row3, y_row3[0], alpha=0.7, color="blue", label=r"$y_{row3}(t)$")
+        ax1.plot(t_row3, y_sol, "--", alpha=0.7, linewidth=1.5, color="gray", label=r"$y_{sol}(t)$")
+        legend(loc="lower right")
+        ax2 = ax1.twinx()
+        y_err = abs(y_row3[0] - y_sol)
+        ax2.plot(t_row3, y_err, alpha=0.8, color="red", label=r"$err:=|y_{row3}(t)-y_{sol}(t)|$")
+        legend(loc="upper right")
+        grid(True)
+        title(r"Integrator ROW2 $\lambda:=%s$" % l)
+        xlabel(r"$t$")
+        savefig("plot_row3_l%s.png" % l)
 
     
 ###################
@@ -240,7 +235,12 @@ def aufgabe_c():
         #       den ROW Methoden.                        #
         #                                                #
         ##################################################
-        pass
+        h = T/float(N)
+        datae.append(sol(T))
+        _, y = constructor(row_2_step)(f, Jf, t0, y0, h, N)
+        data2.append(y[0,-1])
+        _, y = constructor(row_3_step)(f, Jf, t0, y0, h, N)
+        data3.append(y[0,-1])
 
     datae = array(datae)
     data2 = array(data2)
@@ -255,6 +255,8 @@ def aufgabe_c():
     #       exakten Loesung zum Endzeitpunkt T.      #
     #                                                #
     ##################################################
+    err2 = abs(data2 - datae)
+    err3 = abs(data3 - datae)
 
     figure()
     loglog(steps, err2, "b-o", label="ROW-2")
