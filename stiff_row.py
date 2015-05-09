@@ -187,10 +187,10 @@ def aufgabe_b():
         legend(loc="lower right")
         ax2 = ax1.twinx()
         y_err = abs(y_row2[0] - y_sol)
-        ax2.plot(t_row2, y_err, "r-.", label=r"$\epsilon(t):=|y_{row2}(t)-y_{sol}(t)|$")
+        ax2.plot(t_row2, y_err, "r-.", label=r"$\epsilon_i:=|y_{row2}(t_i)-y_{sol}(t_i)|$")
         legend(loc="upper right")
         grid(True)
-        title(r"b) Integrator ROW2 $\lambda:=%s$" % l)
+        title(r"b) Integrator ROW-2 $\lambda:=%s$" % l)
         xlabel(r"$t$")
 
 
@@ -202,10 +202,10 @@ def aufgabe_b():
         legend(loc="lower right")
         ax2 = ax1.twinx()
         y_err = abs(y_row3[0] - y_sol)
-        ax2.plot(t_row3, y_err, "r-.", label=r"$\epsilon(t):=|y_{row3}(t)-y_{sol}(t)|$")
+        ax2.plot(t_row3, y_err, "r-.", label=r"$\epsilon_i:=|y_{row3}(t_i)-y_{sol}(t_i)|$")
         legend(loc="upper right")
         grid(True)
-        title(r"b) Integrator ROW3 $\lambda:=%s$" % l)
+        title(r"b) Integrator ROW-3 $\lambda:=%s$" % l)
         xlabel(r"$t$")
         
         savefig("plot_row_l%s.pdf" % l)
@@ -277,7 +277,7 @@ def aufgabe_c():
     legend(loc="lower left")
     xlabel(r"Number of steps $N$")
     ylabel(r"Absolute Error at $T = %.1f$" % T)
-    title("c) Convergence row2 vs. row3")
+    title("c) Rate of Convergence: ROW-2 vs. ROW-3")
     savefig("convergence_row.pdf")
 
 
@@ -390,7 +390,7 @@ def aufgabe_e():
         legend(loc="lower right")
         ax2 = ax1.twinx()
         y_err = abs(y_ada[0] - y_sol)
-        ax2.plot(t, y_err, "r-.", label=r"$\epsilon(t):=||y_{ada}(t)-y_{sol}(t)||_2$")
+        ax2.plot(t, y_err, "r-.", label=r"$\epsilon_i:=||y_{ada}(t_i)-y_{sol}(t_i)||_2$")
         legend(loc="upper right")
         grid(True)
         title(r"e) Adaptive Integrator with $\lambda:=%s$" % l)
@@ -433,7 +433,7 @@ def aufgabe_f():
     plot(t, y_ada[1], label=r"$y_{1}(t)$")
     legend(loc="upper right")
     grid(True)
-    title(r"f) Adaptive Integrator on a System of ODE's")
+    title(r"f) Adaptive Integrator applied on a System of ODE's")
     xlabel(r"$t$")
     ylabel(r"$\mathbf{y}(t)$")
     savefig("plot_ada_odes.pdf")
@@ -484,7 +484,7 @@ def aufgabe_g():
     ax2.plot(t, append(h, 0), "--", color="gray", label=r"$dt$")
     ax2.legend(loc="lower right")
     ylabel(r"$dt$")
-    title(r"f) Adaptive Integrator stiff ODE")
+    title(r"g) Adaptive Integrator applied on a stiff ODE")
     xlabel(r"$t$")
     savefig("plot_ada_stiff.pdf")
 
