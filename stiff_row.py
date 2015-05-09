@@ -181,32 +181,32 @@ def aufgabe_b():
         t_row2, y_row2 = row_2(f, Jf, t0, y0, h, N)
         y_sol = sol(t_row2)
         ax1.plot(t_row2, y_row2[0], alpha=0.7, color="blue", label=r"$y_{row2}(t)$")
-        ax1.plot(t_row2, y_sol, "--", linewidth=1.5, alpha=0.7, color="gray", label=r"$y_{sol}(t)$")
+        ax1.plot(t_row2, y_sol, "--", linewidth=1.5, color="gray", label=r"$y_{sol}(t)$")
         legend(loc="lower right")
         ax2 = ax1.twinx()
         y_err = abs(y_row2[0] - y_sol)
-        ax2.plot(t_row2, y_err, alpha=0.8, color="red", label=r"$\epsilon(t):=|y_{row2}(t)-y_{sol}(t)|$")
+        ax2.plot(t_row2, y_err, "r-.", label=r"$\epsilon(t):=|y_{row2}(t)-y_{sol}(t)|$")
         legend(loc="upper right")
         grid(True)
         title(r"b) Integrator ROW2 $\lambda:=%s$" % l)
         xlabel(r"$t$")
-        savefig("plot_row2_l%s.png" % l)
+        savefig("plot_row2_l%s.pdf" % l)
 
 
         ax1 = figure().add_subplot(111)    
         t_row3, y_row3 = row_3(f, Jf, t0, y0, h, N)
         y_sol = sol(t_row3)
         ax1.plot(t_row3, y_row3[0], alpha=0.7, color="blue", label=r"$y_{row3}(t)$")
-        ax1.plot(t_row3, y_sol, "--", alpha=0.7, linewidth=1.5, color="gray", label=r"$y_{sol}(t)$")
+        ax1.plot(t_row3, y_sol, "--", linewidth=1.5, color="gray", label=r"$y_{sol}(t)$")
         legend(loc="lower right")
         ax2 = ax1.twinx()
         y_err = abs(y_row3[0] - y_sol)
-        ax2.plot(t_row3, y_err, alpha=0.8, color="red", label=r"$\epsilon(t):=|y_{row3}(t)-y_{sol}(t)|$")
+        ax2.plot(t_row3, y_err, "r-.", label=r"$\epsilon(t):=|y_{row3}(t)-y_{sol}(t)|$")
         legend(loc="upper right")
         grid(True)
         title(r"b) Integrator ROW3 $\lambda:=%s$" % l)
         xlabel(r"$t$")
-        savefig("plot_row3_l%s.png" % l)
+        savefig("plot_row3_l%s.pdf" % l)
 
     
 ###################
@@ -276,7 +276,7 @@ def aufgabe_c():
     xlabel(r"Number of steps $N$")
     ylabel(r"Absolute Error at $T = %.1f$" % T)
     title("c) Convergence row2 vs. row3")
-    savefig("convergence_row.png")
+    savefig("convergence_row.pdf")
 
 
 ###################
@@ -381,16 +381,16 @@ def aufgabe_e():
         t, y_ada, rej, ee = odeintadapt(Psilow, Psihigh, T, y0, f(y0))
         y_sol = sol(t)
         ax1.plot(t, y_ada[0], alpha=0.7, color="blue", label=r"$y_{ada}(t)$")
-        ax1.plot(t, y_sol, "--", alpha=0.7, linewidth=1.5, color="gray", label=r"$y_{sol}(t)$")
+        ax1.plot(t, y_sol, "--", linewidth=1.5, color="gray", label=r"$y_{sol}(t)$")
         legend(loc="lower right")
         ax2 = ax1.twinx()
         y_err = abs(y_ada[0] - y_sol)
-        ax2.plot(t, y_err, alpha=0.8, color="red", label=r"$\epsilon(t):=||y_{ada}(t)-y_{sol}(t)||_2$")
+        ax2.plot(t, y_err, "r-.", label=r"$\epsilon(t):=||y_{ada}(t)-y_{sol}(t)||_2$")
         legend(loc="upper right")
         grid(True)
         title(r"e) Adaptive Integrator with $\lambda:=%s$" % l)
         xlabel(r"$t$")
-        savefig("plot_ada_l%s.png" % l)
+        savefig("plot_ada_l%s.pdf" % l)
     
         nsteps = len(t)
 
@@ -433,7 +433,7 @@ def aufgabe_f():
     title(r"f) Adaptive Integrator on a System of ODE's")
     xlabel(r"$t$")
     ylabel(r"$\mathbf{y}(t)$")
-    savefig("plot_ada_odes.png")
+    savefig("plot_ada_odes.pdf")
 
 ###################
 # Unteraufgabe g) #
@@ -483,7 +483,7 @@ def aufgabe_g():
     ylabel(r"$dt$")
     title(r"f) Adaptive Integrator stiff ODE")
     xlabel(r"$t$")
-    savefig("plot_ada_stiff.png")
+    savefig("plot_ada_stiff.pdf")
 
     print("Minimal steps size: %f" % hmin)
     print("Number of adaptive steps: %i" % nrsteps)
