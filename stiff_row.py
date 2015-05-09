@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+#############################################################################
+# course:   Numerische Methoden D-PHYS
+# exercise: assignment 7
+# author:   Thomas Diggelmann <thomas.diggelmann@student.ethz.ch>
+# date:     09.04.2015
+#############################################################################
 from numpy import *
 from numpy.linalg import solve, norm
 from matplotlib.pyplot import *
@@ -360,6 +367,7 @@ def aufgabe_e():
     #                                                                      #
     ########################################################################
     
+    # run the adaptive strategy for two values of lambda
     for l in [50,200]:
         f = lambda y: l*y*(1-y)
         Jf = lambda y: l- 2*l*y
