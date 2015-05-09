@@ -163,7 +163,7 @@ def aufgabe_b():
         
     found_lambda, lf, err = find_lambda()
     if found_lambda:
-        print("Error for row2 is becoming larger than 0.05 for lambda=%s: err=%s." % (lf, err))
+        print("Error for row2 larger than 0.05 for lambda=%s: err=%s." % (lf, err))
 
     for l in [25,50,200]:
         f = lambda y: l*y*(1 - y)
@@ -178,7 +178,7 @@ def aufgabe_b():
         legend(loc="lower right")
         ax2 = ax1.twinx()
         y_err = abs(y_row2[0] - y_sol)
-        ax2.plot(t_row2, y_err, alpha=0.8, color="red", label=r"$\epsilon=|y_{row2}(t)-y_{sol}(t)|$")
+        ax2.plot(t_row2, y_err, alpha=0.8, color="red", label=r"$\epsilon(t):=|y_{row2}(t)-y_{sol}(t)|$")
         legend(loc="upper right")
         grid(True)
         title(r"b) Integrator ROW2 $\lambda:=%s$" % l)
@@ -194,10 +194,10 @@ def aufgabe_b():
         legend(loc="lower right")
         ax2 = ax1.twinx()
         y_err = abs(y_row3[0] - y_sol)
-        ax2.plot(t_row3, y_err, alpha=0.8, color="red", label=r"$\epsilon=|y_{row3}(t)-y_{sol}(t)|$")
+        ax2.plot(t_row3, y_err, alpha=0.8, color="red", label=r"$\epsilon(t):=|y_{row3}(t)-y_{sol}(t)|$")
         legend(loc="upper right")
         grid(True)
-        title(r"b) Integrator ROW2 $\lambda:=%s$" % l)
+        title(r"b) Integrator ROW3 $\lambda:=%s$" % l)
         xlabel(r"$t$")
         savefig("plot_row3_l%s.png" % l)
 
@@ -377,7 +377,7 @@ def aufgabe_e():
         legend(loc="lower right")
         ax2 = ax1.twinx()
         y_err = abs(y_ada[0] - y_sol)
-        ax2.plot(t, y_err, alpha=0.8, color="red", label=r"$\epsilon=||y_{ada}(t)-y_{sol}(t)||_2$")
+        ax2.plot(t, y_err, alpha=0.8, color="red", label=r"$\epsilon(t):=||y_{ada}(t)-y_{sol}(t)||_2$")
         legend(loc="upper right")
         grid(True)
         title(r"e) Adaptive Integrator with $\lambda:=%s$" % l)
@@ -415,16 +415,17 @@ def aufgabe_f():
     ###################################################################
     Psilow = lambda hi, yi: row_2_step(f, Jf, yi, hi)
     Psihigh = lambda hi, yi: row_3_step(f, Jf, yi, hi)
+    t, y_ada, rej, ee = odeintadapt(Psilow, Psihigh, T, y0, f(y0))
     
     figure()    
-    t, y_ada, rej, ee = odeintadapt(Psilow, Psihigh, T, y0, f(y0))
     plot(t, y_ada[0], label=r"$y_{0}(t)$")
     plot(t, y_ada[1], label=r"$y_{1}(t)$")
-    legend(loc="lower right")
+    legend(loc="upper right")
     grid(True)
-    title(r"f) Adaptive integrator")
+    title(r"f) Adaptive Integrator on a System of ODE's")
     xlabel(r"$t$")
-    savefig("plot_ada_f.png")
+    ylabel(r"$\mathbf{y}(t)$")
+    savefig("plot_ada_odes.png")
 
 ###################
 # Unteraufgabe g) #
@@ -454,11 +455,32 @@ def aufgabe_g():
     #       nicht-adapives Verfahren benoetigen?                 #
     #                                                            #
     ##############################################################
+    Psilow = lambda hi, yi: row_2_step(f, Jf, yi, hi)
+    Psihigh = lambda hi, yi: row_3_step(f, Jf, yi, hi)
+    t, y_ada, rej, ee = odeintadapt(Psilow, Psihigh, T, y0, f(y0))
+    h = diff(t)
 
+    hmin = min(h)
+    nrsteps = len(h)
+
+    figure()
+    ax1 = figure().add_subplot(111)
+    ax1.plot(t, y_ada[0], label=r"$y(t):=\lambda y(t)^2(1-y(t)^2)$")
+    ax1.legend(loc="upper right")
+    ylabel(r"$y(t)$")
+    grid(True)
+    ax2 = ax1.twinx()
+    ax2.plot(t, append(h, 0), "--", color="gray", label=r"$dt$")
+    ax2.legend(loc="lower right")
+    ylabel(r"$dt$")
+    title(r"f) Adaptive Integrator stiff ODE")
+    xlabel(r"$t$")
+    savefig("plot_ada_stiff.png")
 
     print("Minimal steps size: %f" % hmin)
     print("Number of adaptive steps: %i" % nrsteps)
     print("Number of non-adaptive steps: %.2f" % (T/hmin))
+    print("Number of rejected time steps: %i" % len(rej))
 
 
 
