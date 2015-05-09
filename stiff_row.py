@@ -177,7 +177,9 @@ def aufgabe_b():
         Jf = lambda y: l - 2*l*y
         sol = lambda t: (c*exp(l*t)) / (1 - c + c*exp(l*t))
         
-        ax1 = figure().add_subplot(111)
+        fig = figure(figsize=(8.27,11.69))
+        
+        ax1 = fig.add_subplot(211)
         t_row2, y_row2 = row_2(f, Jf, t0, y0, h, N)
         y_sol = sol(t_row2)
         ax1.plot(t_row2, y_row2[0], alpha=0.7, color="blue", label=r"$y_{row2}(t)$")
@@ -190,10 +192,9 @@ def aufgabe_b():
         grid(True)
         title(r"b) Integrator ROW2 $\lambda:=%s$" % l)
         xlabel(r"$t$")
-        savefig("plot_row2_l%s.pdf" % l)
 
 
-        ax1 = figure().add_subplot(111)    
+        ax1 = fig.add_subplot(212)    
         t_row3, y_row3 = row_3(f, Jf, t0, y0, h, N)
         y_sol = sol(t_row3)
         ax1.plot(t_row3, y_row3[0], alpha=0.7, color="blue", label=r"$y_{row3}(t)$")
@@ -206,7 +207,8 @@ def aufgabe_b():
         grid(True)
         title(r"b) Integrator ROW3 $\lambda:=%s$" % l)
         xlabel(r"$t$")
-        savefig("plot_row3_l%s.pdf" % l)
+        
+        savefig("plot_row_l%s.pdf" % l)
 
     
 ###################
@@ -368,7 +370,10 @@ def aufgabe_e():
     ########################################################################
     
     # run the adaptive strategy for two values of lambda
-    for l in [50,200]:
+    ls = [200, 50]
+    rows = len(ls)
+    fig = figure(figsize=(8.27,11.69))
+    for row, l in enumerate(ls):
         f = lambda y: l*y*(1-y)
         Jf = lambda y: l- 2*l*y
         sol = lambda t: (c*exp(l*t)) / (1 - c + c*exp(l*t))
@@ -377,7 +382,7 @@ def aufgabe_e():
         Psilow = lambda hi, yi: row_2_step(f, Jf, yi, hi)
         Psihigh = lambda hi, yi: row_3_step(f, Jf, yi, hi)
     
-        ax1 = figure().add_subplot(111)    
+        ax1 = fig.add_subplot(rows, 1, row)    
         t, y_ada, rej, ee = odeintadapt(Psilow, Psihigh, T, y0, f(y0))
         y_sol = sol(t)
         ax1.plot(t, y_ada[0], alpha=0.7, color="blue", label=r"$y_{ada}(t)$")
@@ -390,11 +395,9 @@ def aufgabe_e():
         grid(True)
         title(r"e) Adaptive Integrator with $\lambda:=%s$" % l)
         xlabel(r"$t$")
-        savefig("plot_ada_l%s.pdf" % l)
-    
         nsteps = len(t)
-
         print("Fuer lambda=%s werden %d Zeitschritte benoetigt" % (l, nsteps))
+    savefig("plot_ada.pdf")
 
 
 ###################

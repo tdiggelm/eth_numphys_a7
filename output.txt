@@ -1,0 +1,12 @@
+ Aufgabe b)
+Error for row2 larger than 0.05 for lambda=55.9: err=0.0500726092302.
+ Aufgabe c)
+ Aufgabe e)
+Fuer lambda=200 werden 55 Zeitschritte benoetigt
+Fuer lambda=50 werden 42 Zeitschritte benoetigt
+ Aufgabe f)
+ Aufgabe g)
+Minimal steps size: 0.001351
+Number of adaptive steps: 44
+Number of non-adaptive steps: 370.11
+Number of rejected time steps: 6
